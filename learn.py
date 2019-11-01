@@ -8,7 +8,7 @@ import numpy as np
 import datetime
 
 
-def train(args, data_loader_train, data_loader_dev, data_loader_test, model, optimizer):
+def train(args, data_loader_train, data_loader_dev, data_loader_test, model, loss_fn, optimizer):
     for epoch in range(1, args.epochs + 1):
         args.current_epoch = epoch
         if args.train:
@@ -16,7 +16,7 @@ def train(args, data_loader_train, data_loader_dev, data_loader_test, model, opt
             if args.no_grad:
                 train_no_grad_epoch(args, data_loader_train, model)
             else:
-                train_epoch(args, data_loader_train, model, optimizer)
+                train_epoch(args, data_loader_train, model, loss_fn, optimizer)
             train_loss, train_accuracy = stat_collect(args, data_loader_train, model, loss_fn, "Statistics", False)
             print("Train loss = {:.6f}".format(train_loss))
             print("Train accuracy = {:.6f}".format(train_accuracy))
@@ -88,7 +88,7 @@ def train_no_grad_epoch(args, data_loader, model):
     return accuracy / sample_num
 
 
-def train_epoch(args, data_loader, model, optimizer):
+def train_epoch(args, data_loader, model, loss_fn, optimizer):
     print("Epoch ", args.current_epoch)
     model.train()
     data_iter = data_loader.__iter__()
@@ -103,7 +103,7 @@ def train_epoch(args, data_loader, model, optimizer):
             output_x = model.forward(input_x).float()
             y_scaled = y[j].float()
             y_scaled = (y_scaled - torch.min(y_scaled)) / (torch.max(y_scaled) - torch.min(y_scaled))
-            loss += torch.mean(torch.abs(output_x.squeeze(-1) - y_scaled) ** 0.01)
+            loss += loss_fn(output_x.squeeze(-1) - y_scaled)
         loss.backward()
         optimizer.step()
         optimizer.zero_grad()

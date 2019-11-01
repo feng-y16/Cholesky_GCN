@@ -12,6 +12,10 @@ from learn import train
 import multiprocessing as mp
 
 
+def loss_fn(output, label):
+    return torch.mean(torch.abs(output - label) ** 0.01)
+
+
 def main():
     mp.set_start_method('spawn')
     args = parse_args()
@@ -22,7 +26,7 @@ def main():
     print("Model set.")
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     print("Optimizer set.")
-    train(args, data_loader_train, data_loader_dev, data_loader_test, model, optimizer)
+    train(args, data_loader_train, data_loader_dev, data_loader_test, model, loss_fn, optimizer)
 
 
 def model_test():
