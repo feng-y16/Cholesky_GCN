@@ -13,7 +13,8 @@ import multiprocessing as mp
 
 
 def loss_fn(output, label):
-    return torch.mean(torch.abs(output - label) ** 0.01)
+    loss = torch.mean((torch.abs(output - label)+1e-45) ** 0.08)
+    return loss
 
 
 def main():
