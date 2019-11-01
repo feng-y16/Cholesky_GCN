@@ -22,8 +22,7 @@ def main():
     print("Model set.")
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     print("Optimizer set.")
-    loss_fn = torch.nn.MSELoss(reduction='mean')
-    train(args, data_loader_train, data_loader_dev, data_loader_test, model, loss_fn, optimizer)
+    train(args, data_loader_train, data_loader_dev, data_loader_test, model, optimizer)
 
 
 def model_test():

@@ -237,7 +237,7 @@ class Net(torch.nn.Module):
                     self.saved_parameters['parameters'].append(self.get_parameters())
                     self.saved_parameters['nonzero_increase'].append(nonzero_increase_2_mean)
                     return nonzero_output_x_2, nonzero_y_2, nonzero_increase_2, output_x_seq_2
-            shrink_t = 0.5
+            shrink_t = 0.9
             mean_parameters_weighted = tensor_list_multiply(mean_parameters, 1 - shrink_t)
             for i in range(0, len(self.saved_parameters['parameters'])):
                 self.saved_parameters['parameters'][i] = \
