@@ -10,10 +10,14 @@ from utils import collate_fn, rearrange
 from model import Net
 from learn import train
 import multiprocessing as mp
+import math
 
 
 def loss_fn(output, label):
-    loss = torch.mean((torch.abs(output - label)+1e-45) ** 0.08)
+    loss = torch.abs(output - label)
+    mask = torch.lt(loss, 1e-5)
+    loss[mask] = 0
+    loss = torch.mean(loss ** 0.01)
     return loss
 
 
