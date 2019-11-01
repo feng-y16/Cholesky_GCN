@@ -103,7 +103,7 @@ def train_epoch(args, data_loader, model, loss_fn, optimizer):
             output_x = model.forward(input_x).float()
             y_scaled = y[j].float()
             y_scaled = (y_scaled - torch.min(y_scaled)) / (torch.max(y_scaled) - torch.min(y_scaled))
-            loss += loss_fn(output_x.squeeze(-1) - y_scaled)
+            loss += loss_fn(output_x.squeeze(-1), y_scaled)
         loss.backward()
         optimizer.step()
         optimizer.zero_grad()
