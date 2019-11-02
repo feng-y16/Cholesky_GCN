@@ -15,13 +15,14 @@ class Net(torch.nn.Module):
         super(Net, self).__init__()
         self.args = args
         increase_multiplier = 5
-        self.layer_names = ['conv1', 'conv2', 'conv3', 'conv4', 'conv5']
+        self.layer_names = ['conv1', 'conv2', 'conv3', 'conv4', 'conv5', 'conv6']
         self.saved_parameters = {'parameters': [], 'nonzero_increase': []}
-        self.conv1 = GCNConv(args.feature_dim, increase_multiplier, cached=False)
-        self.conv2 = GCNConv(increase_multiplier, increase_multiplier**2, cached=False)
-        self.conv3 = GCNConv(increase_multiplier**2, increase_multiplier**3, cached=False)
-        self.conv4 = GCNConv(increase_multiplier**3, increase_multiplier**2, cached=False)
-        self.conv5 = GCNConv(increase_multiplier**2, 1, cached=False)
+        self.conv1 = GCNConv(args.feature_dim, increase_multiplier ** 2, cached=False)
+        self.conv2 = GCNConv(increase_multiplier ** 2, increase_multiplier ** 3, cached=False)
+        self.conv3 = GCNConv(increase_multiplier**3, increase_multiplier**3, cached=False)
+        self.conv4 = GCNConv(increase_multiplier ** 3, increase_multiplier ** 3, cached=False)
+        self.conv5 = GCNConv(increase_multiplier ** 3, increase_multiplier ** 3, cached=False)
+        self.conv6 = GCNConv(increase_multiplier**3, 1, cached=False)
 
     def forward(self, edge_index):
         x = torch.ones(torch.max(edge_index) + 1, 1).to(self.args.device)
@@ -30,6 +31,7 @@ class Net(torch.nn.Module):
         x = self.conv3(x, edge_index)
         x = self.conv4(x, edge_index)
         x = self.conv5(x, edge_index)
+        x = self.conv6(x, edge_index)
         x = functional.dropout(x, p=self.args.dropout, training=self.training)
         x = (x - torch.min(x)) / (torch.max(x) - torch.min(x) + 1e-15)
         return x

@@ -17,8 +17,10 @@ def loss_fn(output, label):
     loss = torch.abs(output - label)
     mask = torch.lt(loss, 1e-5)
     loss[mask] = 0
-    loss = torch.mean(loss ** 0.01)
-    return loss
+    loss = loss ** 0.01
+    weight = torch.linspace(2, 1e-3, len(loss)).cuda()
+    loss = loss * weight
+    return torch.mean(loss)
 
 
 def main():

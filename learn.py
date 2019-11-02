@@ -18,9 +18,10 @@ def train(args, data_loader_train, data_loader_dev, data_loader_test, model, los
                 train_no_grad_epoch(args, data_loader_train, model)
             else:
                 train_epoch(args, data_loader_train, model, loss_fn, optimizer)
-            train_loss, train_accuracy = stat_collect(args, data_loader_train, model, loss_fn, "Statistics", False)
-            print("Train loss = {:.6f}".format(train_loss))
-            print("Train accuracy = {:.6f}".format(train_accuracy))
+            if epoch % 5 == 0:
+                train_loss, train_accuracy = stat_collect(args, data_loader_train, model, loss_fn, "Statistics", False)
+                print("Train loss = {:.6f}".format(train_loss))
+                print("Train accuracy = {:.6f}".format(train_accuracy))
         if args.dev and (epoch - 1) % args.nnz_interval == 0:
             print("Dev")
             dev_loss, dev_accuracy, nonzero_increase = stat_collect(args, data_loader_dev, model, loss_fn, "Statistics")
@@ -105,6 +106,12 @@ def train_epoch(args, data_loader, model, loss_fn, optimizer):
             y_scaled = y[j].float()
             y_scaled = (y_scaled - torch.min(y_scaled)) / (torch.max(y_scaled) - torch.min(y_scaled))
             loss += loss_fn(output_x.squeeze(-1), y_scaled)
+        loss = loss / len(x)
+        # print("Conv1 weight: max{:.6f}, min{:.6f}, mean{:.6f}".format(torch.max(model.conv1.weight),
+        # torch.min(model.conv1.weight), torch.mean(model.conv1.weight)))
+        # print("Conv6 weight: max{:.6f}, min{:.6f}, mean{:.6f}".format(torch.max(model.conv6.weight),
+        # torch.min(model.conv6.weight), torch.mean(model.conv6.weight)))
+        # print("loss = {:.6f}".format(loss))
         loss.backward()
         optimizer.step()
         optimizer.zero_grad()
